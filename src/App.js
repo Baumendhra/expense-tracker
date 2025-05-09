@@ -1,23 +1,35 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import ExpenseForm from './components/ExpenseForm';
+import ExpenseList from './components/ExpenseList';
+import ExpenseFilter from './components/ExpenseFilter';
 import './App.css';
 
 function App() {
+  const [expenses, setExpenses] = useState([]);
+  const [filteredYear, setFilteredYear] = useState('All');
+
+  const addExpenseHandler = (expense) => {
+    setExpenses((prev) => [expense, ...prev]);
+  };
+
+  const deleteExpenseHandler = (id) => {
+    setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  };
+
+  const filterChangeHandler = (year) => {
+    setFilteredYear(year);
+  };
+
+  const filteredExpenses = filteredYear === 'All'
+    ? expenses
+    : expenses.filter(e => e.date.getFullYear().toString() === filteredYear);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Expense Tracker</h1>
+      <ExpenseForm onAddExpense={addExpenseHandler} />
+      <ExpenseFilter selectedYear={filteredYear} onChangeYear={filterChangeHandler} />
+      <ExpenseList expenses={filteredExpenses} onDelete={deleteExpenseHandler} />
     </div>
   );
 }
